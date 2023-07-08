@@ -17,3 +17,24 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/
+  fonts:
+    - family: Jetbrainsmono
+      fonts:
+        - asset: assets/fonts/jetbrainsmono/JetBrainsMono-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/jetbrainsmono/JetBrainsMono-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/jetbrainsmono/JetBrainsMono-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/jetbrainsmono/JetBrainsMono-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/jetbrainsmono/JetBrainsMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/jetbrainsmono/JetBrainsMono-Light.ttf
+          weight: 300
+        - asset: assets/fonts/jetbrainsmono/JetBrainsMono-ExtraLight.ttf
+          weight: 200
+        - asset: assets/fonts/jetbrainsmono/JetBrainsMono-Thin.ttf
+          weight: 100
