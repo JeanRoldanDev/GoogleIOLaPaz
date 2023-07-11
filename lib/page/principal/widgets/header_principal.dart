@@ -4,8 +4,13 @@ import 'package:googleiolapaz/page/principal/widgets/widgets.dart';
 
 class HeaderPrincipal extends StatelessWidget {
   const HeaderPrincipal({
+    required this.onTapCamera,
+    required this.onTapIA,
     super.key,
   });
+
+  final VoidCallback onTapCamera;
+  final VoidCallback onTapIA;
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +38,14 @@ class HeaderPrincipal extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 BtnCircular(icon: Icons.replay_rounded, onTap: () {}),
-                BtnCircular(icon: Icons.camera_alt_outlined, onTap: () {}),
-                BtnCircular(icon: Icons.hub_outlined, onTap: () {}),
+                BtnCircular(
+                  icon: Icons.camera_alt_outlined,
+                  onTap: onTapCamera,
+                ),
+                BtnCircular(
+                  icon: Icons.hub_outlined,
+                  onTap: onTapIA,
+                ),
               ],
             ),
           ),
