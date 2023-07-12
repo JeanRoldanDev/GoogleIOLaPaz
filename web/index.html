@@ -1,59 +1,215 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+  <head>
+    <base href="$FLUTTER_BASE_HREF" />
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="description" content="A new Flutter project." />
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+    <!-- iOS meta tags & icons -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="googleiolapaz" />
+    <link rel="apple-touch-icon" href="icons/Icon-192.png" />
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png" />
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+    <title>googleiolapaz</title>
+    <link rel="manifest" href="manifest.json" />
 
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="googleiolapaz">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    <script>
+      var serviceWorkerVersion = null;
+    </script>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+    <!-- This script adds the flutter initialization JS code -->
+    <script src="flutter.js" defer></script>
 
-  <title>googleiolapaz</title>
-  <link rel="manifest" href="manifest.json">
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <canvas
+      class="output_canvas"
+      id="output_canvas"
+      style="position: absolute; left: 0px; top: 0px; z-index: 10000"
+    ></canvas>
 
-  <script>
-    // The value below is injected by flutter build, do not touch.
-    var serviceWorkerVersion = null;
-  </script>
-  <!-- This script adds the flutter initialization JS code -->
-  <script src="flutter.js" defer></script>
-</head>
-<body>
-  <script>
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
-        }
+    <!--=================== LOAD FLUTTER ===================-->
+    <script>
+      window.addEventListener("load", function (ev) {
+        _flutter.loader.loadEntrypoint({
+          serviceWorker: {
+            serviceWorkerVersion: serviceWorkerVersion,
+          },
+          onEntrypointLoaded: function (engineInitializer) {
+            engineInitializer.initializeEngine().then(function (appRunner) {
+              appRunner.runApp();
+            });
+          },
+        });
       });
-    });
-  </script>
-</body>
+    </script>
+
+    <!--=================== Use Module ===================-->
+    <script>
+      const module = {};
+
+      async function Init(val0, numHands) {
+        const dartObj = val0[Object.getOwnPropertySymbols(val0)[0]];
+        const typeLecture = dartObj[Object.getOwnPropertySymbols(dartObj)[0]];
+        await module.createIAMarker(typeLecture, numHands);
+      }
+
+      async function ProcessVideoIA() {
+        await module.processVideoIA();
+      }
+
+      async function StopVideo() {
+        await module.stropEscanner();
+      }
+    </script>
+
+    <!--=================== Module ===================-->
+    <script type="module">
+      import {
+        HandLandmarker,
+        GestureRecognizer,
+        FilesetResolver,
+      } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
+
+      var canvasElement = document.getElementById("output_canvas");
+      var canvasCtx = canvasElement.getContext("2d");
+
+      let lastVideoTime = -1;
+      let results = undefined;
+
+      let video = undefined;
+      let iaMarker = undefined;
+      let webcamRunning = false;
+
+      let _typeLecture = "NONE";
+
+      const createIAMarker = async (typeLecture, numHands) => {
+        console.warn("loading library");
+        // Carga las librerias
+        const vision = await FilesetResolver.forVisionTasks(
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+        );
+        console.warn("create options init");
+        // Carga el modelo segun el tipo
+        switch (typeLecture) {
+          case "handLandmarker":
+            console.warn("entro en handLandmarker");
+            iaMarker = await GestureRecognizer.createFromOptions(vision, {
+              baseOptions: {
+                modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
+                delegate: "GPU",
+              },
+              runningMode: "VIDEO",
+              numHands: 2,
+            });
+            break;
+          case "gestureRecognizer":
+            console.warn("entro en gestureRecognizer");
+            iaMarker = await GestureRecognizer.createFromOptions(vision, {
+              baseOptions: {
+                modelAssetPath: `https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/gesture_recognizer.task`,
+                delegate: "GPU",
+              },
+              runningMode: "VIDEO",
+              numHands: 2,
+            });
+            break;
+          default:
+            alert("error in recived typeLecture");
+            return;
+        }
+        console.warn("create options finish");
+        await iaMarker.setOptions({ runningMode: "VIDEO" });
+
+        // Se obtiene el video creado por flutter
+        video = document.getElementById("VideoDart");
+        canvasElement.style.left = video.style.left;
+        canvasElement.style.top = video.style.top;
+        canvasElement.width = video.width;
+        canvasElement.height = video.height;
+        canvasElement.style.objectFit = video.style.objectFit;
+        canvasElement.style.aspectRatio = video.style.aspectRatio;
+        canvasElement.style.zIndex = "200000";
+
+        _typeLecture = typeLecture;
+        webcamRunning = true;
+      };
+
+      const processVideoIA = async () => {
+        if (!iaMarker) {
+          console.error("Wait! objectDetector not loaded yet.");
+          alert("Wait! objectDetector not loaded yet.");
+          return;
+        }
+
+        let startTimeMs = performance.now();
+        if (lastVideoTime !== video.currentTime) {
+          lastVideoTime = video.currentTime;
+          switch (_typeLecture) {
+            case "handLandmarker":
+              results = iaMarker.detectForVideo(video, lastVideoTime);
+              break;
+            case "gestureRecognizer":
+              results = iaMarker.recognizeForVideo(video, lastVideoTime);
+              break;
+            default:
+              alert("Error Proccess Video with IA");
+              return;
+          }
+          /// DIBUJO
+          canvasCtx.save();
+          canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+          // console.log(results.landmarks);
+          if (results.landmarks) {
+            for (const landmarks of results.landmarks) {
+              drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
+                color: "#00FF00",
+                lineWidth: 3,
+              });
+              drawLandmarks(canvasCtx, landmarks, {
+                color: "#FF0000",
+                lineWidth: 1,
+              });
+            }
+            if (results.landmarks.length > 0) {
+              // emitEventToDart(JSON.stringify({landmarks: results.landmarks[0]}));
+            }
+          }
+          canvasCtx.restore();
+        }
+
+        if (webcamRunning === true) {
+          window.requestAnimationFrame(processVideoIA);
+        }
+      };
+
+      const stropEscanner = async () => {
+        webcamRunning = false;
+        await iaMarker.close();
+      };
+
+      function emitEventToDart(eventData) {
+        // window.parent.postMessage(eventData, "*");
+      }
+
+      module.createIAMarker = createIAMarker;
+      module.processVideoIA = processVideoIA;
+      module.stropEscanner = stropEscanner;
+    </script>
+  </body>
 </html>
