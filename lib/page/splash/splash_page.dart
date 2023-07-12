@@ -1,29 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:googleiolapaz/layouts/layouts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:googleiolapaz/layouts/nav/nav.dart';
+import 'package:googleiolapaz/page/principal/principal_page.dart';
+import 'package:googleiolapaz/page/splash/bloc/splash_bloc.dart';
+import 'package:googleiolapaz/page/splash/screen/splash_screen.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Label('Google IO', type: LabelType.max),
-            Label('La Paz', type: LabelType.title),
-            SizedBox(height: 10),
-            SizedBox(
-              width: 30,
-              height: 30,
-              child: CircularProgressIndicator(
-                backgroundColor: CColors.background,
-                strokeWidth: 2,
-              ),
-            ),
-          ],
-        ),
+    return BlocProvider<SplashBloc>(
+      create: (context) => SplashBloc()..add(LoadAppEv()),
+      child: BlocListener<SplashBloc, SplashState>(
+        listener: (context, state) {
+          if (state is SplashSuccess) {
+            Nav.root(context, const PrincipalPage());
+          }
+        },
+        child: const SplashScreen(),
       ),
     );
   }
