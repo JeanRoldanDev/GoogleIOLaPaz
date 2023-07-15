@@ -36,11 +36,13 @@
     ></script>
   </head>
   <body>
-    <canvas
-      class="output_canvas"
-      id="output_canvas"
-      style="position: absolute; left: 0px; top: 0px; z-index: 10000"
-    ></canvas>
+    <div id="IAResult" style="display: flex; align-items: center; justify-content: center; z-index: 1000000; position:absolute;">
+      <canvas
+        class="output_canvas"
+        id="output_canvas"
+      ></canvas>
+    </div>
+
 
     <!--=================== LOAD FLUTTER ===================-->
     <script>
@@ -137,13 +139,17 @@
 
         // Se obtiene el video creado por flutter
         video = document.getElementById("VideoDart");
-        canvasElement.style.left = video.style.left;
-        canvasElement.style.top = video.style.top;
-        canvasElement.width = video.width;
-        canvasElement.height = video.height;
-        canvasElement.style.objectFit = video.style.objectFit;
-        canvasElement.style.aspectRatio = video.style.aspectRatio;
-        canvasElement.style.zIndex = "200000";
+
+
+        var rect = video.getBoundingClientRect();
+        var div = document.getElementById("IAResult")
+        div.style.left = rect.left + "px";
+        div.style.top = rect.top + "px";
+        div.style.width = rect.width + "px";
+        div.style.height = rect.height + "px";
+
+        canvasElement.width =  rect.width / 1.7;
+        canvasElement.height = rect.height;
 
         _typeLecture = typeLecture;
         webcamRunning = true;
