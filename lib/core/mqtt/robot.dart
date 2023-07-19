@@ -6,26 +6,36 @@ class Robot extends Equatable {
     required this.clientID,
     required this.name,
     required this.status,
-    this.enable = false,
+    required this.enable,
   });
+
   factory Robot.fromJson(Map<String, dynamic> json) {
     return Robot(
       mac: json['id'] as String,
       name: json['client_name'] as String,
       clientID: json['client_id'] as String,
       status: json['status'] as bool,
+      enable: false,
     );
   }
 
-  Robot copyWith({bool? enable}) {
+  Robot copyWith({bool? enable, bool? status}) {
     return Robot(
       mac: mac,
       clientID: clientID,
       name: name,
-      status: status,
+      status: status ?? this.status,
       enable: enable ?? this.enable,
     );
   }
+
+  static Robot all() => const Robot(
+        mac: '00:00:00:00',
+        clientID: 'all',
+        name: 'All',
+        status: false,
+        enable: false,
+      );
 
   final String mac;
   final String name;
