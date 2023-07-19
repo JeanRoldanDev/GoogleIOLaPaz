@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:googleiolapaz/core/mqtt/mqtt.dart';
+import 'package:googleiolapaz/core/mqtt/robot.dart';
 import 'package:googleiolapaz/layouts/layouts.dart';
 import 'package:googleiolapaz/page/principal/bloc/principal_bloc.dart';
 import 'package:googleiolapaz/page/principal/widgets/widgets.dart';
@@ -79,10 +79,10 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
 class RobotsItem extends StatelessWidget {
   const RobotsItem({super.key});
 
-  Future<void> robotToggle(RobotItem robot) async {
-    // if (context.mounted) {
-    //   context.read<PrincipalBloc>().add(ToggleRobotoEv(robot));
-    // }
+  Future<void> robotToggle(BuildContext context, Robot robot) async {
+    if (context.mounted) {
+      context.read<PrincipalBloc>().add(EnableRobotEv(robot));
+    }
   }
 
   @override
@@ -92,24 +92,25 @@ class RobotsItem extends StatelessWidget {
         return current is NewRobot;
       },
       builder: (context, state) {
+        final robotAll = context.read<PrincipalBloc>().robotALL;
         return Column(
           children: [
+            BtnSpider(
+              icon: '🕷️🕷️',
+              label: robotAll.name,
+              enable: robotAll.enable,
+              status: robotAll.status,
+              onTap: () => robotToggle(context, robotAll),
+            ),
             ...state.robots.map((e) {
               return BtnSpider(
                 icon: '🕷️',
                 label: e.name,
                 status: e.status,
-                enable: true,
-                onTap: () => robotToggle(RobotItem.cris),
+                enable: e.enable,
+                onTap: () => robotToggle(context, e),
               );
             }),
-            BtnSpider(
-              icon: '🕷️',
-              label: 'jean',
-              enable: true,
-              status: true,
-              onTap: () => robotToggle(RobotItem.cris),
-            )
           ],
         );
       },
