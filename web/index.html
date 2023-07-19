@@ -101,22 +101,22 @@
 
       const createIAMarker = async (typeLecture, numHands) => {
         console.warn("loading library");
-        // Carga las librerias
+        // Load library
         const vision = await FilesetResolver.forVisionTasks(
           "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
         );
         console.warn("create options init");
-        // Carga el modelo segun el tipo
+        // Load modelo for typeLecture
         switch (typeLecture) {
           case "handLandmarker":
             console.warn("entro en handLandmarker");
-            iaMarker = await GestureRecognizer.createFromOptions(vision, {
+            iaMarker = await HandLandmarker.createFromOptions(vision, {
               baseOptions: {
                 modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
                 delegate: "GPU",
               },
               runningMode: "VIDEO",
-              numHands: 2,
+              numHands: 1,
             });
             break;
           case "gestureRecognizer":
@@ -127,7 +127,7 @@
                 delegate: "GPU",
               },
               runningMode: "VIDEO",
-              numHands: 2,
+              numHands: 1,
             });
             break;
           default:
@@ -137,7 +137,6 @@
         console.warn("create options finish");
         await iaMarker.setOptions({ runningMode: "VIDEO" });
 
-        // Se obtiene el video creado por flutter
         video = document.getElementById("VideoDart");
 
 
@@ -180,7 +179,6 @@
           canvasCtx.save();
           canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-          // console.log(results.landmarks);
           if (results.landmarks) {
             for (const landmarks of results.landmarks) {
               drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
@@ -193,7 +191,7 @@
               });
             }
             if (results.landmarks.length > 0) {
-              // emitEventToDart(JSON.stringify({landmarks: results.landmarks[0]}));
+              emitEventToDart(JSON.stringify(results))
             }
           }
           canvasCtx.restore();
@@ -210,7 +208,7 @@
       };
 
       function emitEventToDart(eventData) {
-        // window.parent.postMessage(eventData, "*");
+        window.parent.postMessage(eventData, "*");
       }
 
       module.createIAMarker = createIAMarker;
