@@ -15,9 +15,13 @@ class PrincipalPage extends StatelessWidget {
       create: (context) => PrincipalBloc(
         ia: IAimpl(),
         mqtt: MqttImpl(),
-      ),
+      )..add(InitEv()),
       child: BlocListener<PrincipalBloc, PrincipalState>(
         listener: (context, state) {
+          if (state is NewRobot) {
+            Nav.toast(context, 'New Robot Detected');
+          }
+
           if (state is Error) {
             Nav.toast(context, state.message);
           }

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:googleiolapaz/core/mqtt/mqtt_impl.dart';
+import 'package:googleiolapaz/core/mqtt/mqtt.dart';
 import 'package:googleiolapaz/layouts/layouts.dart';
 import 'package:googleiolapaz/page/principal/bloc/principal_bloc.dart';
 import 'package:googleiolapaz/page/principal/widgets/widgets.dart';
@@ -29,11 +29,10 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
     super.initState();
   }
 
-  final mqtt = MqttImpl();
   Future<void> openCamera(BuildContext context) async {
     await cameraWeb.turnON();
     if (context.mounted) {
-      context.read<PrincipalBloc>().add(LoadModelIAEv());
+      context.read<PrincipalBloc>().add(const CameraEv(true));
     }
   }
 
@@ -43,9 +42,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
     }
   }
 
-  Future<void> reset(BuildContext context) async {
-    context.read<PrincipalBloc>().add(LoadModelIAEv());
-  }
+  Future<void> reset(BuildContext context) async {}
 
   @override
   Widget build(BuildContext context) {
@@ -66,13 +63,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                 children: [
                   const SizedBox(
                     width: 90,
-                    child: Column(
-                      children: [
-                        BtnIcon(icon: '🕷️', label: 'Cris'),
-                        SizedBox(height: 10),
-                        BtnIcon(icon: '🕷️', label: 'Jean'),
-                      ],
-                    ),
+                    child: RobotsItem(),
                   ),
                   Expanded(child: cameraWeb),
                 ],
@@ -81,6 +72,47 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class RobotsItem extends StatelessWidget {
+  const RobotsItem({super.key});
+
+  Future<void> robotToggle(RobotItem robot) async {
+    // if (context.mounted) {
+    //   context.read<PrincipalBloc>().add(ToggleRobotoEv(robot));
+    // }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<PrincipalBloc, PrincipalState>(
+      buildWhen: (previous, current) {
+        return current is NewRobot;
+      },
+      builder: (context, state) {
+        return Column(
+          children: [
+            ...state.robots.map((e) {
+              return BtnSpider(
+                icon: '🕷️',
+                label: e.name,
+                status: e.status,
+                enable: true,
+                onTap: () => robotToggle(RobotItem.cris),
+              );
+            }),
+            BtnSpider(
+              icon: '🕷️',
+              label: 'jean',
+              enable: true,
+              status: true,
+              onTap: () => robotToggle(RobotItem.cris),
+            )
+          ],
+        );
+      },
     );
   }
 }
