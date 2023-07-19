@@ -4,7 +4,8 @@ import 'package:googleiolapaz/layouts/layouts.dart';
 class BtnIcon extends StatelessWidget {
   const BtnIcon({
     required this.icon,
-    this.fill = true,
+    required this.label,
+    this.fill = false,
     this.onTap,
     super.key,
   });
@@ -12,30 +13,44 @@ class BtnIcon extends StatelessWidget {
   final String icon;
   final bool fill;
   final VoidCallback? onTap;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: BorderRadius.circular(30),
-      color: fill ? CColors.text : Colors.white,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(30),
-        child: Ink(
-          width: 80,
-          height: 40,
-          child: Center(
-            child: Text(
-              icon,
-              style: TextStyle(
-                color: fill ? Colors.white : CColors.principal,
-                fontWeight: FontWeight.w500,
-                fontSize: 25,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Material(
+          borderRadius: BorderRadius.circular(30),
+          color: fill ? CColors.principal : Colors.white,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(30),
+            child: Ink(
+              width: 80,
+              height: 40,
+              child: Center(
+                child: Text(
+                  icon,
+                  style: TextStyle(
+                    color: fill ? Colors.white : CColors.principal,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 25,
+                  ),
+                ),
               ),
             ),
           ),
         ),
-      ),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
+        )
+      ],
     );
   }
 }
