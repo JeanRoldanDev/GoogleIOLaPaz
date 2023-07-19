@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:googleiolapaz/core/ia/ia.dart';
 import 'package:googleiolapaz/layouts/layouts.dart';
+import 'package:googleiolapaz/page/principal/bloc/principal_bloc.dart';
 import 'package:googleiolapaz/page/principal/widgets/widgets.dart';
 
 class HeaderPrincipal extends StatelessWidget {
   const HeaderPrincipal({
+    required this.onReset,
     required this.onTapCamera,
     required this.onTapIA,
+    required this.onTapOptions,
     super.key,
   });
 
+  final VoidCallback onReset;
   final VoidCallback onTapCamera;
   final VoidCallback onTapIA;
+  final Function(int value) onTapOptions;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +44,10 @@ class HeaderPrincipal extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                BtnCircular(icon: Icons.replay_rounded, onTap: () {}),
+                BtnCircular(
+                  icon: Icons.replay_rounded,
+                  onTap: onReset,
+                ),
                 BtnCircular(
                   icon: Icons.camera_alt_outlined,
                   onTap: onTapCamera,
@@ -49,8 +59,10 @@ class HeaderPrincipal extends StatelessWidget {
               ],
             ),
           ),
-          const Expanded(
-            child: PanelOptions(),
+          Expanded(
+            child: PanelOptions(
+              onTap: onTapOptions,
+            ),
           ),
         ],
       ),
@@ -60,43 +72,72 @@ class HeaderPrincipal extends StatelessWidget {
 
 class PanelOptions extends StatelessWidget {
   const PanelOptions({
+    required this.onTap,
     super.key,
   });
 
+  final Function(int value) onTap;
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        BtnIcon(
-          icon: '👍🏻',
-          onTap: () {},
-        ),
-        BtnIcon(
-          icon: '👎🏻',
-          onTap: () {},
-        ),
-        BtnIcon(
-          icon: '✌🏻',
-          onTap: () {},
-        ),
-        BtnIcon(
-          icon: '☝🏻',
-          onTap: () {},
-        ),
-        BtnIcon(
-          icon: '✊🏻',
-          onTap: () {},
-        ),
-        BtnIcon(
-          icon: '👋🏻',
-          onTap: () {},
-        ),
-        BtnIcon(
-          icon: '🤟🏻',
-          onTap: () {},
-        ),
-      ],
+    return BlocBuilder<PrincipalBloc, PrincipalState>(
+      buildWhen: (previous, current) {
+        return current is Detect;
+      },
+      builder: (context, state) {
+        print(state);
+        var command = Command.none;
+        if (state is Detect) {
+          command = state.iaEvent.command;
+        }
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            BtnIcon(
+              icon: '☝🏻',
+              label: 'Avanzar',
+              fill: command == Command.go,
+              onTap: () => onTap.call(4),
+            ),
+            BtnIcon(
+              icon: '👋🏻',
+              label: 'Retrocede',
+              fill: command == Command.stop,
+              onTap: () => onTap.call(6),
+            ),
+            BtnIcon(
+              icon: '👍🏻',
+              label: 'Izquierda',
+              fill: command == Command.left,
+              onTap: () => onTap.call(1),
+            ),
+            BtnIcon(
+              icon: '👎🏻',
+              label: 'Derecha',
+              fill: command == Command.rigth,
+              onTap: () => onTap.call(2),
+            ),
+            BtnIcon(
+              icon: '✌🏻',
+              label: 'Saluda',
+              fill: command == Command.greet,
+              onTap: () => onTap.call(3),
+            ),
+            BtnIcon(
+              icon: '✊🏻',
+              label: 'Sentado',
+              fill: command == Command.sit,
+              onTap: () => onTap.call(5),
+            ),
+            BtnIcon(
+              icon: '🤟🏻',
+              label: 'Trajedia',
+              fill: command == Command.tragedy,
+              onTap: () => onTap.call(7),
+            ),
+          ],
+        );
+      },
     );
   }
 }

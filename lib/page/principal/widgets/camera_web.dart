@@ -15,6 +15,10 @@ class CameraWeb extends StatefulWidget {
     video.srcObject = getUserMedia;
   }
 
+  Future<void> turnOFF() async {
+    print('QUITAR LA ETIQUETA');
+  }
+
   @override
   State<CameraWeb> createState() => _CameraWebState();
 }

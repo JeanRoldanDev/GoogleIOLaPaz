@@ -13,7 +13,14 @@ class Loading extends PrincipalState {}
 
 class Success extends PrincipalState {}
 
-class Detect extends PrincipalState {}
+class Detect extends PrincipalState {
+  const Detect(this.iaEvent);
+
+  final IAEvent iaEvent;
+
+  @override
+  List<Object> get props => [iaEvent];
+}
 
 class Error extends PrincipalState {
   const Error(this.message);
