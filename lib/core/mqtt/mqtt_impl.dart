@@ -18,6 +18,10 @@ class MqttImpl implements Mqtt {
   final _builder = MqttClientPayloadBuilder();
 
   @override
+  bool get isConnect =>
+      _client!.connectionStatus?.state == MqttConnectionState.connected;
+
+  @override
   Future<bool> connect(Options options) async {
     try {
       print('entro $_client');
@@ -66,7 +70,8 @@ class MqttImpl implements Mqtt {
   @override
   Future<int> sendMessage({
     required Topic topic,
-    required LandkMarkersPosition landkMarkers,
+    // required LandkMarkersPosition landkMarkers,
+    required int value,
   }) async {
     if (_client == null) throw Exception('[Error]: Required connect first');
 
@@ -80,14 +85,17 @@ class MqttImpl implements Mqtt {
 
     print('[MQTT client] MQTT client sending message');
 
-    _builder.addString(landkMarkers.data.toString());
+    _builder
+      ..clear()
+      ..addString(value.toString());
+
     final result = _client!.publishMessage(
       topic.url,
       MqttQos.exactlyOnce,
       _builder.payload!,
     );
 
-    print('[MQTT client] MQTT client sended message $result');
+    print('[MQTT client] MQTT client sended message $result $value');
     return result;
   }
 

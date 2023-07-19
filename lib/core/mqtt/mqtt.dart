@@ -16,9 +16,9 @@ enum Topic {
   output('robot/movement/output'),
   input('robot/movement/input');
 
-  final String url;
-
   const Topic(this.url);
+
+  final String url;
 }
 
 abstract class Mqtt {
@@ -27,7 +27,7 @@ abstract class Mqtt {
 
   Future<int> sendMessage({
     required Topic topic,
-    required LandkMarkersPosition landkMarkers,
+    required int value,
   });
 
   Future<void> subscribeTopic(
@@ -39,4 +39,6 @@ abstract class Mqtt {
   );
 
   Stream<MessageResponse> onMessages();
+
+  bool get isConnect;
 }
