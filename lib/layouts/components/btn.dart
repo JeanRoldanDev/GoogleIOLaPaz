@@ -94,3 +94,73 @@ class BtnCircular extends StatelessWidget {
     );
   }
 }
+
+class BtnSpider extends StatelessWidget {
+  const BtnSpider({
+    required this.icon,
+    required this.label,
+    required this.enable,
+    required this.status,
+    this.onTap,
+    super.key,
+  });
+
+  final String icon;
+  final bool status;
+  final bool enable;
+  final VoidCallback? onTap;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Material(
+          borderRadius: BorderRadius.circular(30),
+          color: enable ? CColors.principal : Colors.white,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(30),
+            child: Ink(
+              width: 80,
+              height: 40,
+              child: Center(
+                child: Text(
+                  icon,
+                  style: TextStyle(
+                    color: enable ? Colors.white : CColors.principal,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 25,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              width: 7,
+              height: 7,
+              margin: const EdgeInsets.only(left: 3),
+              decoration: BoxDecoration(
+                color: status ? Colors.green : Colors.red,
+                borderRadius: BorderRadius.circular(7),
+              ),
+            )
+          ],
+        )
+      ],
+    );
+  }
+}
