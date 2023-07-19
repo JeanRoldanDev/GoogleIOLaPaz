@@ -15,4 +15,9 @@ class IAimpl implements IA {
   Future<void> proccessVideo() async {
     await js.context.callMethod('ProcessVideoIA');
   }
+
+  @override
+  Future<void> stop() async {
+    await js.context.callMethod('Reset');
+  }
 }
