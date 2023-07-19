@@ -13,8 +13,6 @@ part 'principal_state.dart';
 
 typedef PEmit = Emitter<PrincipalState>;
 
-class MyModel {}
-
 class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
   PrincipalBloc({
     required IA ia,
@@ -25,16 +23,17 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
     on<InitEv>(_onInit);
     on<AddRobotEv>(_onAddRobot);
     on<CameraEv>(_onCameraEv);
+    on<EnableRobotEv>(_onEnableRobot);
     //adasdsa
     on<ScannerIAEv>(_onScannerIA);
     on<SendResultEv>(_onSendResult);
     on<StopScannerEv>(_onStopScanner);
     on<SendSignalEv>(_onSendSignalEv);
-    on<ToggleRobotoEv>(_onToggleRoboto);
   }
 
   final IA _ia;
   final Mqtt _mqtt;
+  Robot robotALL = Robot.all();
 
   Future<void> _onInit(InitEv ev, PEmit emit) async {
     await _mqtt.connect(
@@ -47,13 +46,40 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
     await _mqtt.subscribeTopic(Topic.human);
     // TODO: matar stream listener
     _mqtt.onMessages().listen((robot) {
+      print('Escuchando $robot');
       add(AddRobotEv(robot));
     });
   }
 
   Future<void> _onAddRobot(AddRobotEv ev, PEmit emit) async {
-    final newlist = List<Robot>.from([...state.robots, ev.robot]);
+    final newlist = List<Robot>.from(state.robots)
+      ..removeWhere((el) => el.mac == ev.robot.mac)
+      ..add(ev.robot);
+    robotALL = robotALL.copyWith(status: newlist.isNotEmpty);
     emit(NewRobot(newlist));
+  }
+
+  Future<void> _onEnableRobot(EnableRobotEv ev, PEmit emit) async {
+    if (ev.robot.clientID == robotALL.clientID && ev.robot.status) {
+      final newList = List<Robot>.from(state.robots);
+      for (var i = 0; i < newList.length; i++) {
+        newList[i] = newList[i].copyWith(enable: false);
+      }
+      robotALL = robotALL.copyWith(enable: true);
+      emit(NewRobot(newList));
+
+      return;
+    }
+
+    if (ev.robot.clientID != Robot.all().clientID && ev.robot.status) {
+      robotALL = robotALL.copyWith(enable: false);
+      final index = state.robots.indexWhere((el) => el.mac == ev.robot.mac);
+      final newList = List<Robot>.from(state.robots);
+      newList[index] = newList.elementAt(index).copyWith(
+            enable: !ev.robot.enable,
+          );
+      emit(NewRobot(newList));
+    }
   }
 
   Future<void> _onCameraEv(CameraEv ev, PEmit emit) async {
@@ -135,18 +161,4 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
   }
 
   Future<void> _onStopScanner(StopScannerEv ev, PEmit emit) async {}
-
-  Future<void> _onToggleRoboto(ToggleRobotoEv ev, PEmit emit) async {
-    print(ev.robot);
-    final status = await _mqtt.connect(
-      Options(
-        host: 'ws://192.168.0.5',
-        port: 9001,
-        clientId: 'holisqq',
-      ),
-    );
-    if (status) {
-      await _mqtt.subscribeTopic(Topic.output);
-    }
-  }
 }

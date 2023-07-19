@@ -27,6 +27,15 @@ class CameraEv extends PrincipalEvent {
   List<Object> get props => [status];
 }
 
+class EnableRobotEv extends PrincipalEvent {
+  const EnableRobotEv(this.robot);
+
+  final Robot robot;
+
+  @override
+  List<Object> get props => [robot];
+}
+
 class ScannerIAEv extends PrincipalEvent {}
 
 class StopScannerEv extends PrincipalEvent {}
@@ -38,15 +47,6 @@ class SendResultEv extends PrincipalEvent {
 
   @override
   List<Object> get props => [data];
-}
-
-class ToggleRobotoEv extends PrincipalEvent {
-  const ToggleRobotoEv(this.robot);
-
-  final RobotItem robot;
-
-  @override
-  List<Object> get props => [robot];
 }
 
 class SendSignalEv extends PrincipalEvent {
