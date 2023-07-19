@@ -1,10 +1,11 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:googleiolapaz/core/mqtt/message.dart';
 import 'package:googleiolapaz/core/mqtt/mqtt.dart';
 import 'package:googleiolapaz/core/mqtt/options.dart';
+import 'package:googleiolapaz/core/mqtt/robot.dart';
 import 'package:mqtt_client/mqtt_browser_client.dart';
 import 'package:mqtt_client/mqtt_client.dart' hide Topic;
 
@@ -14,7 +15,7 @@ class MqttImpl implements Mqtt {
   StreamSubscription<List<MqttReceivedMessage<MqttMessage>>>?
       messagesSubscription;
 
-  final _sCtrl = StreamController<MessageResponse>();
+  final _sCtrl = StreamController<Robot>();
   final _builder = MqttClientPayloadBuilder();
 
   @override
@@ -116,21 +117,19 @@ class MqttImpl implements Mqtt {
         final recMess = mqttMessage.payload as MqttPublishMessage;
         final message =
             MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+
         print('[MQTT client] MQTT message: topic is <${mqttMessage.topic}>, '
             'payload is <-- $message -->');
 
-        _sCtrl.add(
-          MessageResponse(
-            message: message,
-            topic: mqttMessage.topic,
-          ),
-        );
+        final data = jsonDecode(message) as Map<String, dynamic>;
+
+        _sCtrl.add(Robot.fromJson(data));
       }
     });
   }
 
   @override
-  Stream<MessageResponse> onMessages() {
+  Stream<Robot> onMessages() {
     return _sCtrl.stream;
   }
 

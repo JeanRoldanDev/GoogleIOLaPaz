@@ -1,28 +1,12 @@
-import 'package:googleiolapaz/core/mqtt/message.dart';
 import 'package:googleiolapaz/core/mqtt/options.dart';
+import 'package:googleiolapaz/core/mqtt/robot.dart';
+import 'package:googleiolapaz/core/mqtt/types.dart';
 
-enum LandkMarkersPosition {
-  forward(1),
-  back(2),
-  left(3),
-  right(4);
-
-  const LandkMarkersPosition(this.data);
-
-  final int data;
-}
-
-enum Topic {
-  output('robot/movement/output'),
-  input('robot/movement/input');
-
-  const Topic(this.url);
-
-  final String url;
-}
+export 'types.dart';
 
 abstract class Mqtt {
   Future<bool> connect(Options options);
+  bool get isConnect;
   Future<void> disconnect();
 
   Future<int> sendMessage({
@@ -38,7 +22,5 @@ abstract class Mqtt {
     Topic topic,
   );
 
-  Stream<MessageResponse> onMessages();
-
-  bool get isConnect;
+  Stream<Robot> onMessages();
 }
