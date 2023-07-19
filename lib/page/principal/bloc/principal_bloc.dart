@@ -5,6 +5,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:googleiolapaz/core/ia/ia.dart';
 import 'package:googleiolapaz/core/mqtt/mqtt.dart';
+import 'package:googleiolapaz/core/mqtt/options.dart';
+import 'package:googleiolapaz/core/mqtt/robot.dart';
 
 part 'principal_event.dart';
 part 'principal_state.dart';
@@ -19,57 +21,71 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
     required Mqtt mqtt,
   })  : _ia = ia,
         _mqtt = mqtt,
-        super(Initial()) {
+        super(const Initial([])) {
+    on<InitEv>(_onInit);
+    on<AddRobotEv>(_onAddRobot);
+    on<CameraEv>(_onCameraEv);
+    //adasdsa
     on<ScannerIAEv>(_onScannerIA);
-    on<LoadModelIAEv>(_onLoadModelIA);
     on<SendResultEv>(_onSendResult);
     on<StopScannerEv>(_onStopScanner);
     on<SendSignalEv>(_onSendSignalEv);
+    on<ToggleRobotoEv>(_onToggleRoboto);
   }
 
   final IA _ia;
   final Mqtt _mqtt;
 
-  final _ctrl = StreamController<MyModel>();
+  Future<void> _onInit(InitEv ev, PEmit emit) async {
+    await _mqtt.connect(
+      Options(
+        host: 'ws://192.168.0.5',
+        port: 9001,
+        clientId: 'Google_IO_LaPaz',
+      ),
+    );
+    await _mqtt.subscribeTopic(Topic.human);
+    // TODO: matar stream listener
+    _mqtt.onMessages().listen((robot) {
+      add(AddRobotEv(robot));
+    });
+  }
 
-  StreamController<MyModel> get controller => _ctrl;
+  Future<void> _onAddRobot(AddRobotEv ev, PEmit emit) async {
+    final newlist = List<Robot>.from([...state.robots, ev.robot]);
+    emit(NewRobot(newlist));
+  }
 
-  Future<void> _onLoadModelIA(LoadModelIAEv ev, PEmit emit) async {
+  Future<void> _onCameraEv(CameraEv ev, PEmit emit) async {
     try {
-      emit(Loading());
-      final options = IAoptions(
-        type: TypeLecture.gestureRecognizer,
-      );
-      await _ia.init(options);
+      emit(const Loading([]));
+      if (ev.status) {
+        final options = IAoptions(
+          type: TypeLecture.gestureRecognizer,
+        );
+        await _ia.init(options);
+      } else {
+        //TODO REMOVER CAMARA
+      }
     } catch (e) {
-      emit(Error(e.toString()));
+      emit(Error(e.toString(), const []));
     }
   }
 
   Future<void> _onScannerIA(ScannerIAEv ev, PEmit emit) async {
     try {
-      emit(Loading());
+      emit(const Loading([]));
       await _ia.proccessVideo();
-      // final status = await _mqtt.connect(
-      //   Options(
-      //     host: 'ws://192.168.18.75',
-      //     port: 9001,
-      //     clientId: 'holisqq',
-      //   ),
-      // );
-      // if (status) {
-      //   await _mqtt.subscribeTopic(Topic.output);
-      // }
       timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         sendSignalFunc();
       });
     } catch (e) {
-      emit(Error(e.toString()));
+      emit(Error(e.toString(), const []));
     }
   }
 
   Future<void> _onSendSignalEv(SendSignalEv ev, PEmit emit) async {
-    emit(Detect(ev.event));
+    emit(Detect(ev.event, const []));
   }
 
   IAEvent? iaEvent;
@@ -119,4 +135,18 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
   }
 
   Future<void> _onStopScanner(StopScannerEv ev, PEmit emit) async {}
+
+  Future<void> _onToggleRoboto(ToggleRobotoEv ev, PEmit emit) async {
+    print(ev.robot);
+    final status = await _mqtt.connect(
+      Options(
+        host: 'ws://192.168.0.5',
+        port: 9001,
+        clientId: 'holisqq',
+      ),
+    );
+    if (status) {
+      await _mqtt.subscribeTopic(Topic.output);
+    }
+  }
 }
