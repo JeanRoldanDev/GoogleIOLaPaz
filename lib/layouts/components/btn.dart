@@ -128,6 +128,7 @@ class BtnSpider extends StatelessWidget {
               child: Center(
                 child: Text(
                   icon,
+                  maxLines: 1,
                   style: TextStyle(
                     color: enable ? Colors.white : CColors.principal,
                     fontWeight: FontWeight.w500,
@@ -141,12 +142,20 @@ class BtnSpider extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
+            SizedBox(
+              width: 70,
+              child: Text(
+                label,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                softWrap: true,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             Container(
