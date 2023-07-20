@@ -1,16 +1,13 @@
+import 'package:googleiolapaz/core/ia/models/ia_options.dart';
+
+export 'models/ia_event.dart';
+export 'models/ia_options.dart';
+export 'models/land_mark.dart';
+
 enum TypeLecture { handLandmarker, gestureRecognizer }
-
-class IAoptions {
-  IAoptions({
-    required this.type,
-    this.numHands = 1,
-  });
-
-  final TypeLecture type;
-  final int numHands;
-}
 
 abstract class IA {
   Future<void> init(IAoptions options);
   Future<void> proccessVideo();
+  Future<void> stop();
 }
