@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:googleiolapaz/core/ia/models/ia_event.dart';
 import 'package:googleiolapaz/core/mqtt/robot.dart';
 import 'package:googleiolapaz/layouts/layouts.dart';
 import 'package:googleiolapaz/page/principal/bloc/principal_bloc.dart';
@@ -38,11 +39,18 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
 
   Future<void> proccessVideo(BuildContext context) async {
     if (context.mounted) {
-      context.read<PrincipalBloc>().add(ScannerIAEv());
+      context.read<PrincipalBloc>().add(StartScannerEv());
     }
   }
 
   Future<void> reset(BuildContext context) async {}
+
+  Future<void> sendSignalManual(BuildContext context, Command command) async {
+    final defaultValue = IAEvent(command, Hand.left, const []);
+    context.read<PrincipalBloc>()
+      ..setInitIAEvent(defaultValue)
+      ..add(SendSignalEv(defaultValue));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +63,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
               onReset: () => reset(context),
               onTapCamera: () => openCamera(context),
               onTapIA: () => proccessVideo(context),
-              onTapOptions: (value) {},
+              onTapOptions: (command) => sendSignalManual(context, command),
             ),
             const SizedBox(height: 10),
             Expanded(
@@ -65,7 +73,29 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                     width: 90,
                     child: RobotsItem(),
                   ),
-                  Expanded(child: cameraWeb),
+                  Expanded(
+                    child: BlocBuilder<PrincipalBloc, PrincipalState>(
+                      buildWhen: (previous, current) {
+                        return current is LoadingCamera ||
+                            current is SuccessCamera;
+                      },
+                      builder: (context, state) {
+                        return Stack(
+                          children: [
+                            cameraWeb,
+                            if (state is LoadingCamera)
+                              const Center(
+                                child: SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             )
