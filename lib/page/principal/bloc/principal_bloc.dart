@@ -1,3 +1,5 @@
+// ignore_for_file: cascade_invocations
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -22,10 +24,11 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
         super(const Initial([])) {
     on<InitEv>(_onInit);
     on<AddRobotEv>(_onAddRobot);
-    on<CameraEv>(_onCameraEv);
     on<EnableRobotEv>(_onEnableRobot);
+
+    on<CameraEv>(_onCameraEv);
+    on<StartScannerEv>(_onStartScanner);
     //adasdsa
-    on<ScannerIAEv>(_onScannerIA);
     on<SendResultEv>(_onSendResult);
     on<StopScannerEv>(_onStopScanner);
     on<SendSignalEv>(_onSendSignalEv);
@@ -34,6 +37,8 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
   final IA _ia;
   final Mqtt _mqtt;
   Robot robotALL = Robot.all();
+  IAEvent? iaEvent;
+  Timer? timer;
 
   Future<void> _onInit(InitEv ev, PEmit emit) async {
     await _mqtt.connect(
@@ -44,17 +49,26 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
       ),
     );
     await _mqtt.subscribeTopic(Topic.human);
-    // TODO: matar stream listener
     _mqtt.onMessages().listen((robot) {
-      print('Escuchando $robot');
       add(AddRobotEv(robot));
     });
   }
 
   Future<void> _onAddRobot(AddRobotEv ev, PEmit emit) async {
-    final newlist = List<Robot>.from(state.robots)
-      ..removeWhere((el) => el.mac == ev.robot.mac)
-      ..add(ev.robot);
+    final newlist = List<Robot>.from(state.robots);
+    final search =
+        newlist.indexWhere((el) => el.mac == ev.robot.mac && el.enable == true);
+
+    if (search >= 0) {
+      newlist.removeAt(search);
+      newlist.add(ev.robot.copyWith(enable: true));
+      return;
+    }
+
+    if (search == -1) {
+      newlist.add(ev.robot);
+    }
+
     robotALL = robotALL.copyWith(status: newlist.isNotEmpty);
     emit(NewRobot(newlist));
   }
@@ -65,7 +79,7 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
       for (var i = 0; i < newList.length; i++) {
         newList[i] = newList[i].copyWith(enable: false);
       }
-      robotALL = robotALL.copyWith(enable: true);
+      robotALL = robotALL.copyWith(enable: !ev.robot.enable);
       emit(NewRobot(newList));
 
       return;
@@ -74,58 +88,71 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
     if (ev.robot.clientID != Robot.all().clientID && ev.robot.status) {
       robotALL = robotALL.copyWith(enable: false);
       final index = state.robots.indexWhere((el) => el.mac == ev.robot.mac);
-      final newList = List<Robot>.from(state.robots);
-      newList[index] = newList.elementAt(index).copyWith(
-            enable: !ev.robot.enable,
-          );
-      emit(NewRobot(newList));
+      if (index >= 0) {
+        final newList = List<Robot>.from(state.robots);
+        newList[index] = newList.elementAt(index).copyWith(
+              enable: !ev.robot.enable,
+            );
+        emit(NewRobot(newList));
+      }
     }
   }
 
   Future<void> _onCameraEv(CameraEv ev, PEmit emit) async {
     try {
-      emit(const Loading([]));
+      emit(LoadingCamera(state.robots));
       if (ev.status) {
+        await Future.delayed(const Duration(seconds: 2), () {});
         final options = IAoptions(
           type: TypeLecture.gestureRecognizer,
         );
         await _ia.init(options);
-      } else {
-        //TODO REMOVER CAMARA
       }
+      emit(SuccessCamera(state.robots));
     } catch (e) {
       emit(Error(e.toString(), const []));
     }
   }
 
-  Future<void> _onScannerIA(ScannerIAEv ev, PEmit emit) async {
+  Future<void> _onStartScanner(StartScannerEv ev, PEmit emit) async {
     try {
-      emit(const Loading([]));
       await _ia.proccessVideo();
       timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        sendSignalFunc();
+        if (iaEvent != null) {
+          add(SendSignalEv(iaEvent!));
+        }
       });
     } catch (e) {
       emit(Error(e.toString(), const []));
     }
   }
 
-  Future<void> _onSendSignalEv(SendSignalEv ev, PEmit emit) async {
-    emit(Detect(ev.event, const []));
+  void setInitIAEvent(IAEvent val) {
+    iaEvent = val;
   }
 
-  IAEvent? iaEvent;
-  Timer? timer;
-  Future<void> sendSignalFunc() async {
-    if (iaEvent != null) {
-      print('SIGNAL ${iaEvent!.command}');
-      add(SendSignalEv(iaEvent!));
-      // if (_mqtt.isConnect) {
-      //   await _mqtt.sendMessage(
-      //     topic: Topic.output,
-      //     value: iaEvent!.command.value,
-      //   );
-      // }
+  Future<void> _onSendSignalEv(SendSignalEv ev, PEmit emit) async {
+    emit(Detect(ev.event, state.robots));
+
+    if (ev.event.command == Command.none) return;
+
+    if (_mqtt.isConnect && robotALL.enable) {
+      await _mqtt.sendMessage(
+        topic: Topic.move,
+        clientId: robotALL.clientID,
+        command: iaEvent!.command.value,
+      );
+    }
+
+    if (_mqtt.isConnect) {
+      final robotsActive = state.robots.where((e) => e.enable);
+      for (final robot in robotsActive) {
+        await _mqtt.sendMessage(
+          topic: Topic.move,
+          clientId: robot.clientID,
+          command: iaEvent!.command.value,
+        );
+      }
     }
   }
 

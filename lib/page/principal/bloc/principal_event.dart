@@ -36,7 +36,7 @@ class EnableRobotEv extends PrincipalEvent {
   List<Object> get props => [robot];
 }
 
-class ScannerIAEv extends PrincipalEvent {}
+class StartScannerEv extends PrincipalEvent {}
 
 class StopScannerEv extends PrincipalEvent {}
 

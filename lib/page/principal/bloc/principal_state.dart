@@ -13,18 +13,18 @@ class Initial extends PrincipalState {
   List<Object> get props => [robots];
 }
 
-class Loading extends PrincipalState {
-  const Loading(super.robots);
+class LoadingCamera extends PrincipalState {
+  const LoadingCamera(super.robots);
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [robots];
 }
 
-class Success extends PrincipalState {
-  const Success(super.robots);
+class SuccessCamera extends PrincipalState {
+  const SuccessCamera(super.robots);
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [robots];
 }
 
 class NewRobot extends PrincipalState {
@@ -43,7 +43,7 @@ class Detect extends PrincipalState {
   final IAEvent iaEvent;
 
   @override
-  List<Object> get props => [iaEvent];
+  List<Object> get props => [iaEvent, robots];
 }
 
 class Error extends PrincipalState {
