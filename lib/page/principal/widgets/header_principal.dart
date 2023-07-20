@@ -17,7 +17,7 @@ class HeaderPrincipal extends StatelessWidget {
   final VoidCallback onReset;
   final VoidCallback onTapCamera;
   final VoidCallback onTapIA;
-  final Function(int value) onTapOptions;
+  final Function(Command command) onTapOptions;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +76,7 @@ class PanelOptions extends StatelessWidget {
     super.key,
   });
 
-  final Function(int value) onTap;
+  final Function(Command command) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +85,6 @@ class PanelOptions extends StatelessWidget {
         return current is Detect;
       },
       builder: (context, state) {
-        print(state);
         var command = Command.none;
         if (state is Detect) {
           command = state.iaEvent.command;
@@ -97,43 +96,43 @@ class PanelOptions extends StatelessWidget {
               icon: '☝🏻',
               label: 'Avanzar',
               fill: command == Command.go,
-              onTap: () => onTap.call(4),
+              onTap: () => onTap.call(Command.go),
             ),
             BtnIcon(
               icon: '👋🏻',
               label: 'Retrocede',
               fill: command == Command.stop,
-              onTap: () => onTap.call(6),
+              onTap: () => onTap.call(Command.stop),
             ),
             BtnIcon(
               icon: '👍🏻',
               label: 'Izquierda',
               fill: command == Command.left,
-              onTap: () => onTap.call(1),
+              onTap: () => onTap.call(Command.left),
             ),
             BtnIcon(
               icon: '👎🏻',
               label: 'Derecha',
               fill: command == Command.rigth,
-              onTap: () => onTap.call(2),
+              onTap: () => onTap.call(Command.rigth),
             ),
             BtnIcon(
               icon: '✌🏻',
               label: 'Saluda',
               fill: command == Command.greet,
-              onTap: () => onTap.call(3),
+              onTap: () => onTap.call(Command.greet),
             ),
             BtnIcon(
               icon: '✊🏻',
               label: 'Sentado',
               fill: command == Command.sit,
-              onTap: () => onTap.call(5),
+              onTap: () => onTap.call(Command.sit),
             ),
             BtnIcon(
               icon: '🤟🏻',
               label: 'Trajedia',
               fill: command == Command.tragedy,
-              onTap: () => onTap.call(7),
+              onTap: () => onTap.call(Command.tragedy),
             ),
           ],
         );
