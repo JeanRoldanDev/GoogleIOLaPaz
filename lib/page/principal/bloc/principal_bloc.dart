@@ -102,7 +102,7 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
     try {
       emit(LoadingCamera(state.robots));
       if (ev.status) {
-        await Future.delayed(const Duration(seconds: 2), () {});
+        await Future.delayed(const Duration(seconds: 4), () {});
         final options = IAoptions(
           type: TypeLecture.gestureRecognizer,
         );
