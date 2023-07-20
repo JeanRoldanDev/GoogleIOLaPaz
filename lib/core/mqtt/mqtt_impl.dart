@@ -71,8 +71,8 @@ class MqttImpl implements Mqtt {
   @override
   Future<int> sendMessage({
     required Topic topic,
-    // required LandkMarkersPosition landkMarkers,
-    required int value,
+    required String clientId,
+    required int command,
   }) async {
     if (_client == null) throw Exception('[Error]: Required connect first');
 
@@ -86,9 +86,14 @@ class MqttImpl implements Mqtt {
 
     print('[MQTT client] MQTT client sending message');
 
+    final value = <String, dynamic>{
+      'client_id': clientId,
+      'command': command,
+    };
+
     _builder
       ..clear()
-      ..addString(value.toString());
+      ..addString(jsonEncode(value));
 
     final result = _client!.publishMessage(
       topic.url,

@@ -9,9 +9,10 @@ abstract class Mqtt {
   bool get isConnect;
   Future<void> disconnect();
 
-  Future<int> sendMessage({
+  Future<void> sendMessage({
     required Topic topic,
-    required int value,
+    required String clientId,
+    required int command,
   });
 
   Future<void> subscribeTopic(
