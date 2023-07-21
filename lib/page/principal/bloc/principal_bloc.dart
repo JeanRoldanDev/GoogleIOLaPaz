@@ -102,7 +102,7 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
     try {
       emit(LoadingCamera(state.robots));
       if (ev.status) {
-        await Future.delayed(const Duration(seconds: 4), () {});
+        await Future.delayed(const Duration(seconds: 3), () {});
         final options = IAoptions(
           type: TypeLecture.gestureRecognizer,
         );
@@ -117,7 +117,7 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
   Future<void> _onStartScanner(StartScannerEv ev, PEmit emit) async {
     try {
       await _ia.proccessVideo();
-      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      timer = Timer.periodic(const Duration(milliseconds: 2000), (timer) {
         if (iaEvent != null) {
           add(SendSignalEv(iaEvent!));
         }
