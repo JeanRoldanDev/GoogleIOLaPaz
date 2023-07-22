@@ -43,7 +43,7 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
   Future<void> _onInit(InitEv ev, PEmit emit) async {
     await _mqtt.connect(
       Options(
-        host: 'ws://192.168.0.5',
+        host: 'ws://192.168.152.250',
         port: 9001,
         clientId: 'Google_IO_LaPaz',
       ),
