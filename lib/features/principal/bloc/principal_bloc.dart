@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:googleiolapaz/app/config/env.dart';
 import 'package:googleiolapaz/core/ia/ia.dart';
 import 'package:googleiolapaz/core/mqtt/mqtt.dart';
 import 'package:googleiolapaz/core/mqtt/options.dart';
@@ -43,7 +44,7 @@ class PrincipalBloc extends Bloc<PrincipalEvent, PrincipalState> {
   Future<void> _onInit(InitEv ev, PEmit emit) async {
     await _mqtt.connect(
       Options(
-        host: 'ws://192.168.152.250',
+        host: Env.instance.ws,
         port: 9001,
         clientId: 'Google_IO_LaPaz',
       ),

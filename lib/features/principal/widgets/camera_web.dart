@@ -1,8 +1,7 @@
 import 'dart:html' as html;
-
 import 'package:flutter/material.dart';
-import 'package:googleiolapaz/layouts/layouts.dart';
-import 'package:googleiolapaz/page/principal/widgets/shims/dart_ui.dart' as ui;
+import 'package:googleiolapaz/shared/render_video/shims/dart_ui.dart' as ui;
+import 'package:googleiolapaz/shared/utils/utils.dart';
 import 'package:universal_html/html.dart';
 
 class CameraWeb extends StatefulWidget {

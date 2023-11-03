@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:googleiolapaz/layouts/layouts.dart';
+import 'package:googleiolapaz/shared/shared.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Label('Google IO', type: LabelType.max),
-            Label('La Paz', type: LabelType.title),
-            SizedBox(height: 10),
-            SizedBox(
+            const Label('Google IO', type: LabelType.max),
+            VerticalSpace.md,
+            const Label('La Paz', type: LabelType.title),
+            VerticalSpace.xl,
+            const SizedBox(
               width: 30,
               height: 30,
               child: CircularProgressIndicator(

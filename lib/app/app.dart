@@ -4,8 +4,8 @@ import 'package:googleiolapaz/core/ia/ia.dart';
 import 'package:googleiolapaz/core/ia/ia_impl.dart';
 import 'package:googleiolapaz/core/mqtt/mqtt.dart';
 import 'package:googleiolapaz/core/mqtt/mqtt_impl.dart';
-import 'package:googleiolapaz/layouts/layouts.dart';
-import 'package:googleiolapaz/page/splash/splash_page.dart';
+import 'package:googleiolapaz/features/splash/splash_page.dart';
+import 'package:googleiolapaz/shared/shared.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

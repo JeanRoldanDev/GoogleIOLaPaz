@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:googleiolapaz/core/ia/models/ia_event.dart';
 import 'package:googleiolapaz/core/mqtt/robot.dart';
-import 'package:googleiolapaz/layouts/layouts.dart';
-import 'package:googleiolapaz/page/principal/bloc/principal_bloc.dart';
-import 'package:googleiolapaz/page/principal/widgets/widgets.dart';
+import 'package:googleiolapaz/features/principal/bloc/principal_bloc.dart';
+import 'package:googleiolapaz/features/principal/widgets/widgets.dart';
+import 'package:googleiolapaz/shared/utils/utils.dart';
+import 'package:googleiolapaz/shared/widgets/widgets.dart';
 import 'package:universal_html/html.dart';
 
 class PrincipalScreen extends StatefulWidget {
@@ -65,7 +66,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
               onTapIA: () => proccessVideo(context),
               onTapOptions: (command) => sendSignalManual(context, command),
             ),
-            const SizedBox(height: 10),
+            VerticalSpace.sl,
             Expanded(
               child: Row(
                 children: [
@@ -90,7 +91,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                                   height: 50,
                                   child: CircularProgressIndicator(),
                                 ),
-                              )
+                              ),
                           ],
                         );
                       },
@@ -98,7 +99,7 @@ class _PrincipalScreenState extends State<PrincipalScreen> {
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

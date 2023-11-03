@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:googleiolapaz/layouts/layouts.dart';
+import 'package:googleiolapaz/app/config/env.dart';
+import 'package:googleiolapaz/shared/shared.dart';
 
 class InfoUser extends StatelessWidget {
   const InfoUser({super.key});
@@ -12,11 +13,16 @@ class InfoUser extends StatelessWidget {
           radius: 40,
           backgroundImage: AssetImage('assets/user.jpeg'),
         ),
+        HorizontalSpace.sm,
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Label('#: SP32 // IP: 192.168.0.34', color: CColors.textGray),
+            Label(
+              '#: SP32 // ${Env.instance.ws}',
+              color: CColors.textGray,
+            ),
+            VerticalSpace.md,
             RichText(
               text: TextSpan(
                 text: 'Jean Carlos ',
@@ -39,6 +45,7 @@ class InfoUser extends StatelessWidget {
                 ],
               ),
             ),
+            VerticalSpace.md,
             const Label('Google IO - Bolivia La Paz', color: CColors.textGray),
           ],
         ),

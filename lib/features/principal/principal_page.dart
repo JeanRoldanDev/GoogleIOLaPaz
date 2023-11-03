@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:googleiolapaz/core/ia/ia_impl.dart';
 import 'package:googleiolapaz/core/mqtt/mqtt_impl.dart';
-import 'package:googleiolapaz/layouts/nav/nav.dart';
-import 'package:googleiolapaz/page/principal/bloc/principal_bloc.dart';
-import 'package:googleiolapaz/page/principal/screen/principal_screen.dart';
+import 'package:googleiolapaz/features/principal/bloc/principal_bloc.dart';
+import 'package:googleiolapaz/features/principal/screen/principal_screen.dart';
+import 'package:googleiolapaz/shared/nav/nav.dart';
 
 class PrincipalPage extends StatelessWidget {
   const PrincipalPage({super.key});
