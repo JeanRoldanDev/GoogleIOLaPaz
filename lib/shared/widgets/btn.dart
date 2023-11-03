@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:googleiolapaz/layouts/layouts.dart';
+import 'package:googleiolapaz/shared/utils/utils.dart';
 
 class BtnIcon extends StatelessWidget {
   const BtnIcon({
@@ -49,7 +49,7 @@ class BtnIcon extends StatelessWidget {
             fontSize: 10,
             fontWeight: FontWeight.bold,
           ),
-        )
+        ),
       ],
     );
   }
@@ -166,9 +166,9 @@ class BtnSpider extends StatelessWidget {
                 color: status ? Colors.green : Colors.red,
                 borderRadius: BorderRadius.circular(7),
               ),
-            )
+            ),
           ],
-        )
+        ),
       ],
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:googleiolapaz/layouts/layouts.dart';
+import 'package:googleiolapaz/shared/utils/utils.dart';
 
 enum LabelType {
   min,

@@ -49,3 +49,4 @@ app.*.map.json
 pubspec.lock
 .firebase/
 .firebase/*.cache
+*env.json

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:googleiolapaz/core/ia/ia.dart';
-import 'package:googleiolapaz/layouts/layouts.dart';
-import 'package:googleiolapaz/page/principal/bloc/principal_bloc.dart';
-import 'package:googleiolapaz/page/principal/widgets/widgets.dart';
+import 'package:googleiolapaz/features/principal/bloc/principal_bloc.dart';
+import 'package:googleiolapaz/features/principal/widgets/widgets.dart';
+import 'package:googleiolapaz/shared/shared.dart';
 
 class HeaderPrincipal extends StatelessWidget {
   const HeaderPrincipal({
@@ -17,15 +17,28 @@ class HeaderPrincipal extends StatelessWidget {
   final VoidCallback onReset;
   final VoidCallback onTapCamera;
   final VoidCallback onTapIA;
-  final Function(Command command) onTapOptions;
+  final void Function(Command command) onTapOptions;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 93,
+    final size = MediaQuery.sizeOf(context);
+    final width = size.width;
+    print('$width');
+    final newPadding = width > 1220
+        ? 50.0
+        : width > 1220
+            ? 40.0
+            : 10.0;
+    final isLarge = width > 1000;
+
+    return AnimatedContainer(
+      duration: const Duration(
+        milliseconds: 1000,
+      ),
+      curve: Curves.decelerate,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(50),
+        borderRadius: BorderRadius.circular(newPadding),
         boxShadow: [
           BoxShadow(
             color: CColors.principal.withOpacity(0.10),
@@ -36,34 +49,70 @@ class HeaderPrincipal extends StatelessWidget {
         ],
       ),
       padding: const EdgeInsets.all(10),
-      child: Row(
+      child: Column(
         children: [
-          const InfoUser(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                BtnCircular(
-                  icon: Icons.replay_rounded,
-                  onTap: onReset,
+          Row(
+            mainAxisAlignment:
+                isLarge ? MainAxisAlignment.start : MainAxisAlignment.center,
+            children: [
+              const InfoUser(),
+              if (isLarge) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      BtnCircular(
+                        icon: Icons.replay_rounded,
+                        onTap: onReset,
+                      ),
+                      BtnCircular(
+                        icon: Icons.camera_alt_outlined,
+                        onTap: onTapCamera,
+                      ),
+                      BtnCircular(
+                        icon: Icons.hub_outlined,
+                        onTap: onTapIA,
+                      ),
+                    ],
+                  ),
                 ),
-                BtnCircular(
-                  icon: Icons.camera_alt_outlined,
-                  onTap: onTapCamera,
-                ),
-                BtnCircular(
-                  icon: Icons.hub_outlined,
-                  onTap: onTapIA,
+                Expanded(
+                  child: PanelOptions(
+                    onTap: onTapOptions,
+                  ),
                 ),
               ],
-            ),
+            ],
           ),
-          Expanded(
-            child: PanelOptions(
+          if (!isLarge) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.lg,
+                vertical: Spacing.md,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  BtnCircular(
+                    icon: Icons.replay_rounded,
+                    onTap: onReset,
+                  ),
+                  BtnCircular(
+                    icon: Icons.camera_alt_outlined,
+                    onTap: onTapCamera,
+                  ),
+                  BtnCircular(
+                    icon: Icons.hub_outlined,
+                    onTap: onTapIA,
+                  ),
+                ],
+              ),
+            ),
+            PanelOptions(
               onTap: onTapOptions,
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -76,7 +125,7 @@ class PanelOptions extends StatelessWidget {
     super.key,
   });
 
-  final Function(Command command) onTap;
+  final void Function(Command command) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -89,8 +138,8 @@ class PanelOptions extends StatelessWidget {
         if (state is Detect) {
           command = state.iaEvent.command;
         }
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        return Wrap(
+          alignment: WrapAlignment.spaceEvenly,
           children: [
             BtnIcon(
               icon: '☝🏻',

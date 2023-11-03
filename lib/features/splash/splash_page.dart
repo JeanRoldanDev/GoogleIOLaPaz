@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:googleiolapaz/layouts/nav/nav.dart';
-import 'package:googleiolapaz/page/principal/principal_page.dart';
-import 'package:googleiolapaz/page/splash/bloc/splash_bloc.dart';
-import 'package:googleiolapaz/page/splash/screen/splash_screen.dart';
+import 'package:googleiolapaz/features/principal/principal_page.dart';
+import 'package:googleiolapaz/features/splash/bloc/splash_bloc.dart';
+import 'package:googleiolapaz/features/splash/screen/splash_screen.dart';
+import 'package:googleiolapaz/shared/nav/nav.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
