@@ -1,19 +1,41 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Run Dev",
-            "request": "launch",
-            "type": "dart",
-            "program": "lib/main_development.dart",
-            "args": ["--flavor", "development", "--target", "lib/main_development.dart"]
-          },
-        {
-            "name": "Run production",
-            "request": "launch",
-            "type": "dart",
-            "program": "lib/main_production.dart",
-            "args": ["--flavor", "production", "--target", "lib/main_production.dart"]
-          }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Development",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_development.dart",
+      "args": [
+        "--flavor",
+        "development",
+        "--target",
+        "lib/main_development.dart",
+        "--web-port",
+        "7357",
+        "--web-renderer",
+        "html",
+        "--dart-define-from-file",
+        "env.json"
+      ]
+    },
+    {
+      "name": "Launch Production",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_production.dart",
+      "args": [
+        "--flavor",
+        "production",
+        "--target",
+        "lib/main_production.dart",
+        "--web-port",
+        "7357",
+        "--web-renderer",
+        "html",
+        "--dart-define-from-file",
+        "env.json"
+      ]
+    }
+  ]
 }
